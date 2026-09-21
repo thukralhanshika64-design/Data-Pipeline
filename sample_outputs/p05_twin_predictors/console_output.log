@@ -1,0 +1,31 @@
+
+=== CLASSIFICATION: churn ===
+                    accuracy  precision  recall     f1  roc_auc
+model                                                          
+Dummy (prior)          0.708      0.000   0.000  0.000    0.500
+LogisticRegression     0.757      0.633   0.397  0.488    0.776
+RandomForest           0.730      0.565   0.332  0.418    0.749
+
+Threshold matters! LogisticRegression at different decision thresholds:
+  thr=0.5  precision=0.633 recall=0.397 f1=0.488
+  thr=0.35 precision=0.521 recall=0.625 f1=0.568
+  thr=0.25 precision=0.468 recall=0.795 f1=0.589
+
+=== REGRESSION: house price ===
+                            MAE    RMSE MedianAE     R2   MAPE
+model                                                         
+Dummy (mean)             58,546  85,603   46,622 -0.000  43.0%
+LinearRegression         21,031  40,808   13,105  0.773  13.5%
+LinearReg on log(price)  20,239  49,258   10,882  0.669  11.0%
+RandomForest             20,044  40,081   12,042  0.781  11.8%
+
+RMSE/MAE ratio = 2.00  (1.25 ~ Gaussian errors; much higher => a few HUGE errors dominate RMSE)
+
+=== BRIDGE: 'is the house expensive (top 25%)?' ===
+  regress-then-threshold AUC = 0.971   direct classifier AUC = 0.976
+  Regression keeps MORE information (the magnitude), so it is often competitive - but the
+  right choice depends on the decision: if you only need the yes/no, optimise for it directly.
+
+Plots saved in /home/claude/ml-interview-lab/projects/p05_twin_predictors/outputs
+
+--- stderr ---

@@ -1,0 +1,38 @@
+
+[A] Validation curve: model complexity (polynomial degree) vs error
+  degree= 1  train MSE=   0.272  val MSE=       0.311  -> UNDERFITTING (high bias: even the training error is bad)
+  degree= 3  train MSE=   0.082  val MSE=       0.099  -> GOOD FIT
+  degree= 4  train MSE=   0.077  val MSE=       0.104  -> GOOD FIT
+  degree= 8  train MSE=   0.051  val MSE=       0.117  -> GOOD FIT
+  degree=12  train MSE=   0.037  val MSE=       0.432  -> OVERFITTING (high variance: big train/val gap)
+  degree=15  train MSE=   0.036  val MSE=     102.739  -> OVERFITTING (high variance: big train/val gap)
+  best degree by validation error: 3
+
+[B] Learning curves: does MORE DATA help?
+  degree= 1: cv-train gap    0.033 (n=25) -> 0.004 (n=320);  final cv MSE = 0.268
+  degree=12: cv-train gap  433.901 (n=25) -> 0.006 (n=320);  final cv MSE = 0.090
+  Reading: high-bias model -> curves converge HIGH (more data won't help);
+           high-variance model -> big gap that SHRINKS with more data.
+
+[C] Fixing an overfit degree-12 model (30 training points)
+  strategy                     train MSE  test MSE
+  overfit baseline (deg 12)        0.037     0.435
+  + Ridge alpha=1 (deg 12)         0.156     0.190
+  + Ridge alpha=10 (deg 12)        0.200     0.224
+  simpler model (deg 4)            0.077     0.093
+  10x more data (deg 12)           0.087     0.087
+
+[D] Early stopping with gradient boosting
+  train MSE keeps falling (0.0007 at 600 trees) but validation is best at 22 trees (0.0852) and worsens to 0.1747
+  sklearn's built-in n_iter_no_change stopped automatically at 29 trees
+
+[E] Real data: decision-tree depth on breast-cancer dataset
+  max_depth= 1  train acc=0.932  test acc=0.889
+  max_depth= 3  train acc=0.980  test acc=0.901
+  max_depth= 5  train acc=0.997  test acc=0.912
+  max_depth=15  train acc=1.000  test acc=0.906
+  Note: an unrestricted tree memorises training data (train acc 1.0). Fixes: max_depth, min_samples_leaf, ccp_alpha (pruning), or switch to a Random Forest.
+
+Plots saved in /home/claude/ml-interview-lab/projects/p02_overfit_detective/outputs
+
+--- stderr ---

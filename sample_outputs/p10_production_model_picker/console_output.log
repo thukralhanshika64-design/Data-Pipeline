@@ -1,0 +1,57 @@
+Dataset: customers_nl. Benchmarking candidates (this takes ~1 minute)...
+
+                      cv_auc  cv_std  test_auc  train_s  p50_ms  p95_ms  rows_per_s  size_kb  interp  maint
+model                                                                                                      
+LogisticRegression    0.8045  0.0097    0.7970     0.01    3.47    3.65    228319.0      5.0       5      5
+DecisionTree(depth5)  0.8747  0.0102    0.8856     0.02    3.52    4.35    236639.0     10.0       4      4
+RandomForest          0.8798  0.0084    0.8776     0.63   13.88   16.86     23417.0   8437.0       2      3
+GradientBoosting      0.8836  0.0087    0.8870     0.78    3.70    4.19    148231.0    204.0       2      3
+HistGradientBoosting  0.8755  0.0135    0.8674     0.27    5.14    8.53     60890.0    542.0       2      3
+KNN(k=25)             0.8406  0.0045    0.8279     0.02    3.98    4.66     25832.0   1073.0       3      3
+MLP(64,32)            0.8546  0.0105    0.8679     0.45    3.55    4.01    215409.0     86.0       1      2
+
+Statistical tie: best CV AUC = GradientBoosting (0.8836 +- 0.0087). Models within 1 std: ['RandomForest', 'GradientBoosting', 'HistGradientBoosting']
+-> Accuracy alone cannot separate them; that is exactly why the other criteria decide.
+
+--- profile: realtime_api       winner: DecisionTree(depth5)   disqualified by gates: ['RandomForest']
+                      performance  latency  interpretability  maintenance  weighted_score
+model                                                                                    
+DecisionTree(depth5)        0.886      1.0              0.75         0.75           0.883
+GradientBoosting            1.000      1.0              0.25         0.50           0.750
+LogisticRegression          0.000      1.0              1.00         1.00           0.700
+KNN(k=25)                   0.457      1.0              0.50         0.50           0.645
+
+--- profile: batch_max_accuracy winner: GradientBoosting       disqualified by gates: none
+                      performance  latency  interpretability  maintenance  weighted_score
+model                                                                                    
+GradientBoosting            1.000      1.0              0.25         0.50           0.912
+DecisionTree(depth5)        0.886      1.0              0.75         0.75           0.874
+RandomForest                0.952      1.0              0.25         0.50           0.868
+HistGradientBoosting        0.897      1.0              0.25         0.50           0.829
+
+--- profile: regulated_lending  winner: DecisionTree(depth5)   disqualified by gates: ['RandomForest', 'GradientBoosting', 'HistGradientBoosting', 'KNN(k=25)', 'MLP(64,32)']
+                      performance  latency  interpretability  maintenance  weighted_score
+model                                                                                    
+DecisionTree(depth5)        0.886      1.0              0.75         0.75            0.80
+LogisticRegression          0.000      1.0              1.00         1.00            0.75
+RandomForest                0.952      1.0              0.25         0.50             NaN
+GradientBoosting            1.000      1.0              0.25         0.50             NaN
+
+Sensitivity: winner as the weight on PERFORMANCE varies (other weights keep their ratios)
+  performance weight 0.0 -> LogisticRegression
+  performance weight 0.1 -> LogisticRegression
+  performance weight 0.2 -> DecisionTree(depth5)   <-- winner changes here
+  performance weight 0.3 -> DecisionTree(depth5)
+  performance weight 0.4 -> DecisionTree(depth5)
+  performance weight 0.5 -> DecisionTree(depth5)
+  performance weight 0.6 -> DecisionTree(depth5)
+  performance weight 0.7 -> GradientBoosting   <-- winner changes here
+  performance weight 0.8 -> GradientBoosting
+  performance weight 0.9 -> GradientBoosting
+  performance weight 1.0 -> GradientBoosting
+
+Chosen profile = realtime_api  ->  shipping: DecisionTree(depth5)
+Saved churn_model_v1.joblib (held-out test AUC 0.8856) and registered churn_model v1 as PRODUCTION.
+Serve it with:  uvicorn projects.p10_production_model_picker.serve:app --port 8000
+
+--- stderr ---

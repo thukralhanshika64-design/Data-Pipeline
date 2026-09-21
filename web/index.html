@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Commerce Data Pipeline — 3D Control Center & Analytics</title>
+  <meta name="description" content="Production-grade End-to-End E-Commerce Data Pipeline with Raw Ingestion, Catalog Price Backfill, 5 Star Schema Data Marts, and 3D Visualizer.">
+  
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="brand-wrapper">
+      <div class="brand-logo-cube">
+        <span>ETL</span>
+      </div>
+      <div class="brand-text">
+        <h1>E-Commerce Data Pipeline <span class="badge-3d">3D Studio</span></h1>
+        <p>End-to-End Ingestion, Data Cleansing, 5 Analytics Marts & LTV Engine</p>
+      </div>
+    </div>
+
+    <!-- Navigation Pills -->
+    <nav class="nav-pills">
+      <button class="nav-pill active" data-target="overview">⚡ 3D Pipeline</button>
+      <button class="nav-pill" data-target="analytics">📊 5 Data Marts</button>
+      <button class="nav-pill" data-target="etl-lab">🧹 Cleansing & Audit</button>
+      <button class="nav-pill" data-target="ltv-engine">🧮 LTV & ML Risk</button>
+      <button class="nav-pill" data-target="db-explorer">🗄️ SQL Tables</button>
+    </nav>
+
+    <div class="header-actions">
+      <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted); margin-right: 0.5rem;">
+        <span class="status-dot"></span>
+        <span>Pipeline: <strong style="color: var(--accent-emerald);">Active & Seeded</strong></span>
+      </div>
+      <button class="btn-accent" id="btn-trigger-etl">
+        ⚡ Run Pipeline ETL
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- 1. 3D WebGL Pipeline Hero -->
+    <section class="hero-3d-wrapper" id="section-3d-hero">
+      <div class="hero-3d-header">
+        <h2>End-to-End Data Pipeline Architecture</h2>
+        <p>Live WebGL rendering of Raw Ingestion ➔ Cleansing & Catalog Backfill ➔ 5 Data Marts ➔ Analytics Serving.</p>
+      </div>
+
+      <div class="hero-3d-controls">
+        <button class="ctrl-btn active" data-mode="pipeline">⚡ Pipeline Flow</button>
+        <button class="ctrl-btn" data-mode="decision">🌐 3D Data Density</button>
+        <button class="ctrl-btn" data-mode="neural">🧠 LTV Neural Space</button>
+      </div>
+
+      <div id="canvas-3d-container"></div>
+
+      <div class="hero-3d-footer">
+        <div class="interactive-hint">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          <span>Drag with mouse / touch to rotate 3D pipeline nodes in real-time</span>
+        </div>
+        <div class="live-stats-bar">
+          <div class="live-stat-chip">
+            <span style="color: var(--text-muted);">Raw Stream:</span>
+            <span class="val" id="stat-raw-count">15,750 TXs</span>
+          </div>
+          <div class="live-stat-chip">
+            <span style="color: var(--text-muted);">Data Retained:</span>
+            <span class="val" style="color: var(--accent-emerald);">98.4% Usable</span>
+          </div>
+          <div class="live-stat-chip">
+            <span style="color: var(--text-muted);">Data Marts:</span>
+            <span class="val">5 Star Schemas</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Engineering Decision Banner -->
+    <div style="background: linear-gradient(90deg, rgba(0, 242, 254, 0.1), rgba(168, 85, 247, 0.1)); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: var(--radius-md); padding: 1.25rem 1.75rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;">
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div style="width: 44px; height: 44px; background: rgba(0, 242, 254, 0.15); border: 1px solid var(--accent-cyan); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+          💡
+        </div>
+        <div>
+          <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--accent-cyan);">Key Engineering Decision: Catalog Price Backfilling</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">
+            Raw transactional data contains ~12% missing price fields. Instead of dropping these rows (naive dropna), we join with the reference <strong>Product Catalog</strong> to backfill prices — <strong>keeping 98.4% more data usable</strong> for downstream reporting and ML models!
+          </p>
+        </div>
+      </div>
+      <span class="badge-3d" style="white-space: nowrap;">Data Quality Best Practice</span>
+    </div>
+
+    <!-- 2. Pipeline Summary KPIs -->
+    <div class="metrics-row" style="margin-bottom: 2rem;">
+      <div class="metric-card highlight-cyan">
+        <span class="title">Total Pipeline Revenue</span>
+        <span class="value" id="kpi-revenue">$7,265,230</span>
+      </div>
+      <div class="metric-card highlight-purple">
+        <span class="title">Gross Profit (Margin)</span>
+        <span class="value" id="kpi-profit">$2,388,434 <span style="font-size: 0.9rem; color: var(--accent-emerald);">(32.9%)</span></span>
+      </div>
+      <div class="metric-card highlight-emerald">
+        <span class="title">Cleansed Orders</span>
+        <span class="value" id="kpi-orders">15,000</span>
+      </div>
+      <div class="metric-card highlight-coral">
+        <span class="title">Duplicates Removed</span>
+        <span class="value" id="kpi-dupes">750 (100% Deduped)</span>
+      </div>
+    </div>
+
+    <!-- 3. Section: 5 Data Marts Analytics -->
+    <section class="sim-workspace" id="view-analytics">
+      <div class="section-heading">
+        <div>
+          <h3>📊 5 Analytics-Ready Data Marts</h3>
+          <p>Real-time dimensional aggregation powered by SQLite Star Schema tables.</p>
+        </div>
+        <div class="nav-pills" id="mart-subnav">
+          <button class="nav-pill active" data-mart="daily">Daily Sales</button>
+          <button class="nav-pill" data-mart="category">Category Margins</button>
+          <button class="nav-pill" data-mart="region">Region Share</button>
+          <button class="nav-pill" data-mart="ltv">Customer LTV</button>
+        </div>
+      </div>
+
+      <div class="sim-grid">
+        <!-- Controls & Dimensional Breakdown -->
+        <div class="sim-control-panel" id="mart-control-panel">
+          <div class="sim-panel-title">
+            <span>Mart Dimension Inspector</span>
+          </div>
+          <div id="mart-inspector-content">
+            <!-- Populated via app.js -->
+          </div>
+        </div>
+
+        <!-- Dynamic Chart -->
+        <div class="sim-chart-container">
+          <div class="sim-chart-header">
+            <h4 id="mart-chart-title">📈 Daily Sales & Profit Trajectory (mart_daily_sales)</h4>
+            <span class="topic-tag" style="color: var(--accent-cyan);">Star Schema Mart</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="mart-chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Section: Cleansing & Quality Audit -->
+    <section class="sim-workspace" id="view-etl-lab">
+      <div class="section-heading">
+        <div>
+          <h3>🧹 Data Cleansing, Backfill & Quality Audit</h3>
+          <p>Inspect the transformation pipeline and compare Raw Messy Ingest vs Cleansed Fact Table.</p>
+        </div>
+        <span class="topic-tag" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">Audit Verified</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+        <div class="metric-card highlight-cyan">
+          <span class="title">1. Raw Ingestion Layer</span>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-top: 6px; line-height: 1.4;">
+            Contains simulated real-world noise: 5% duplicates, 12% missing price tags, 8% unstandardized regions. Stored immutably.
+          </p>
+        </div>
+        <div class="metric-card highlight-purple">
+          <span class="title">2. Transformation Engine</span>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-top: 6px; line-height: 1.4;">
+            Deduplication based on (customer + product + timestamp). Product catalog join backfills prices. Missing regions mapped to 'Region Unspecified'.
+          </p>
+        </div>
+        <div class="metric-card highlight-emerald">
+          <span class="title">3. Star Schema Loading</span>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-top: 6px; line-height: 1.4;">
+            Aggregated into 5 dimensional tables in SQLite. Sub-millisecond execution for BI dashboards and downstream ML feature stores.
+          </p>
+        </div>
+      </div>
+
+      <!-- Raw vs Cleaned Side by Side Selector -->
+      <div style="margin-top: 1rem;">
+        <div class="nav-pills" style="margin-bottom: 1rem; display: inline-flex;">
+          <button class="nav-pill active" id="btn-show-clean">🧹 Cleaned Fact Table (fact_clean_transactions)</button>
+          <button class="nav-pill" id="btn-show-raw">📥 Raw Messy Stream (raw_ecom_transactions)</button>
+          <button class="nav-pill" id="btn-show-audit">🛡️ Quality Audit Log (mart_data_quality_audit)</button>
+        </div>
+        <div class="db-content-panel">
+          <table class="data-table-custom" id="table-etl-preview">
+            <!-- Populated via app.js -->
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Section: Customer LTV & ML Churn Risk -->
+    <section class="sim-workspace" id="view-ltv-engine">
+      <div class="section-heading">
+        <div>
+          <h3>🧮 Customer Lifetime Value (LTV) & Churn Risk Engine</h3>
+          <p>Downstream predictive ML feature store derived from transformed transactional RFM features.</p>
+        </div>
+        <span class="badge-3d">ML Feature Store</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 380px 1fr; gap: 1.75rem;">
+        <!-- Live Prediction Form -->
+        <div class="sim-control-panel">
+          <div class="sim-panel-title">
+            <span>Predict Customer LTV & Churn</span>
+          </div>
+          <div class="control-group">
+            <label>Total Historical Spend ($): <span id="val-ltv-spend">$1,200</span></label>
+            <input type="range" id="slider-ltv-spend" min="100" max="15000" value="1200" step="100">
+          </div>
+          <div class="control-group">
+            <label>Total Lifetime Orders: <span id="val-ltv-orders">4 Orders</span></label>
+            <input type="range" id="slider-ltv-orders" min="1" max="25" value="4" step="1">
+          </div>
+          <div class="control-group">
+            <label>Distinct Categories Purchased: <span id="val-ltv-cats">2 Categories</span></label>
+            <input type="range" id="slider-ltv-cats" min="1" max="4" value="2" step="1">
+          </div>
+          <div class="metric-card highlight-cyan" id="ltv-prediction-output" style="margin-top: 0.5rem;">
+            <span class="title">Predicted Annual LTV</span>
+            <span class="value" id="ltv-predicted-val" style="color: var(--accent-cyan);">$2,160.00</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
+              Churn Risk: <strong id="ltv-churn-risk-val" style="color: var(--accent-emerald);">36% (Low Risk)</strong>
+            </span>
+          </div>
+        </div>
+
+        <!-- High-Value Cohorts Table -->
+        <div class="sim-chart-container">
+          <div class="sim-chart-header">
+            <h4>🏆 Top High-Value Customer Retention Cohort (mart_customer_ltv)</h4>
+            <span class="topic-tag">Top Spenders</span>
+          </div>
+          <div class="db-content-panel" style="background: transparent; padding: 0;">
+            <table class="data-table-custom" id="table-ltv-top">
+              <!-- Populated via app.js -->
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Section: SQL Database Explorer -->
+    <section class="sim-workspace" id="view-db-explorer">
+      <div class="section-heading">
+        <div>
+          <h3>🗄️ SQL Database & Schema Explorer</h3>
+          <p>Direct query access to all 5 Star Schema Data Marts and transactional tables in <code>ml_lab.db</code>.</p>
+        </div>
+        <span class="topic-tag">SQLite Platform</span>
+      </div>
+
+      <div class="db-layout">
+        <!-- Table Navigation -->
+        <div class="table-list">
+          <button class="table-btn active" data-table="mart_daily_sales">
+            <span>📊 mart_daily_sales</span>
+            <span style="font-size: 0.75rem; color: var(--text-dim);">90 Days</span>
+          </button>
+          <button class="table-btn" data-table="mart_category_performance">
+            <span>🏷️ mart_category_perf</span>
+            <span style="font-size: 0.75rem; color: var(--text-dim);">4 Categories</span>
+          </button>
+          <button class="table-btn" data-table="mart_region_performance">
+            <span>🌍 mart_region_perf</span>
+            <span style="font-size: 0.75rem; color: var(--text-dim);">6 Regions</span>
+          </button>
+          <button class="table-btn" data-table="mart_customer_ltv">
+            <span>🧮 mart_customer_ltv</span>
+            <span style="font-size: 0.75rem; color: var(--text-dim);">2,497 Cust</span>
+          </button>
+          <button class="table-btn" data-table="mart_data_quality_audit">
+            <span>🛡️ data_quality_audit</span>
+            <span style="font-size: 0.75rem; color: var(--text-dim);">Lineage</span>
+          </button>
+          <button class="table-btn" data-table="fact_clean_transactions">
+            <span>🧹 fact_clean_txs</span>
+            <span style="font-size: 0.75rem; color: var(--text-dim);">15K Clean</span>
+          </button>
+          <button class="table-btn" data-table="raw_ecom_transactions">
+            <span>📥 raw_ecom_txs</span>
+            <span style="font-size: 0.75rem; color: var(--text-dim);">15.7K Raw</span>
+          </button>
+        </div>
+
+        <!-- Table Data Display -->
+        <div class="db-content-panel">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+            <h4 id="db-active-table-title" style="font-size: 0.95rem; font-weight: 700;">Table: mart_daily_sales</h4>
+            <span style="font-size: 0.75rem; color: var(--text-dim);">Engine: SQLite 3</span>
+          </div>
+          <table class="data-table-custom" id="db-preview-table">
+            <!-- Populated via app.js -->
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- App Footer -->
+  <footer class="app-footer">
+    <div>
+      <strong>E-Commerce Data Pipeline & 3D Control Center</strong> — Designed for AI/ML & Data Engineering
+    </div>
+    <div class="footer-links">
+      <a href="#section-3d-hero" class="footer-link">3D Architecture</a>
+      <a href="#view-analytics" class="footer-link">5 Data Marts</a>
+      <a href="#view-etl-lab" class="footer-link">Cleansing Audit</a>
+      <a href="#view-db-explorer" class="footer-link">SQL Explorer</a>
+    </div>
+  </footer>
+
+  <script src="three-scene.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

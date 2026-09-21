@@ -1,0 +1,41 @@
+
+[1-2] From-scratch Bagging & Gradient Boosting vs scikit-learn (house price, RMSE - lower is better)
+    single deep tree                 RMSE =     47,560   (0.0s)
+    shallow tree (depth 3)           RMSE =     51,626   (0.0s)
+    Bagging (scratch, 100 trees)     RMSE =     34,902   (0.9s)
+    BaggingRegressor (sklearn)       RMSE =     33,760   (0.8s)
+    RandomForest (sklearn)           RMSE =     34,154   (1.2s)
+    GradientBoosting (scratch)       RMSE =     33,844   (0.8s)
+    GradientBoosting (sklearn)       RMSE =     33,870   (0.7s)
+    Scratch versions land close to sklearn's -> you now know what those libraries actually do.
+
+[3] Classification arena on churn (5-fold CV ROC-AUC)
+                           auc_mean  auc_std  cv_time_s
+model                                                  
+LogisticRegression (ref.)    0.7755   0.0126     0.1315
+AdaBoost (stumps)            0.7712   0.0128     2.4336
+Gradient Boosting            0.7687   0.0080     3.7501
+Voting (LR+RF+HGB, soft)     0.7636   0.0091     3.8554
+Extra Trees                  0.7601   0.0109     1.5294
+Stacking (LR meta)           0.7548   0.0069    13.4378
+Random Forest                0.7548   0.0071     2.5418
+HistGradientBoosting         0.7400   0.0084     1.4492
+Decision tree (depth 4)      0.7347   0.0162     0.1248
+Bagging (100 trees)          0.7172   0.0055     6.1402
+Decision tree (unpruned)     0.5909   0.0158     0.1828
+    Read with the std in mind: differences smaller than ~1 std between models are not meaningful.
+    An unpruned tree overfits (high variance); bagging/forests fix that; boosting builds strength from
+    weak learners; a plain LogisticRegression can be very competitive when signal is mostly linear.
+
+[4] Random Forest extras: out-of-bag (OOB) score and feature importance
+    OOB accuracy = 0.727   |   held-out test accuracy = 0.754   (OOB ~ a free validation set: each tree is tested on the ~37% rows it never saw)
+    top impurity-based importances: {'tenure_months': 0.217, 'monthly_charges': 0.206, 'total_charges': 0.187, 'contract_type_month-to-month': 0.114, 'num_support_calls': 0.08, 'contract_type_two-year': 0.05}
+    (impurity importance is biased toward high-cardinality/continuous features - confirm with permutation importance)
+
+[5] Boosting: learning rate vs number of trees (validation AUC per boosting round)
+    learning_rate=0.3   best round= 11  best val AUC=0.7821  AUC at 400 rounds=0.7181
+    learning_rate=0.1   best round= 32  best val AUC=0.7857  AUC at 400 rounds=0.7578
+    learning_rate=0.03  best round=138  best val AUC=0.7877  AUC at 400 rounds=0.7792
+    High learning rate peaks early then overfits; small learning rate + many trees + early stopping is the robust recipe.
+
+--- stderr ---

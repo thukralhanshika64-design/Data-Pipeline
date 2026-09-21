@@ -1,0 +1,42 @@
+
+Polynomial regression (complexity = degree)
+  complexity    bias^2  variance  b2+var+s2  measured
+           1    0.1778    0.0162     0.2839    0.2842
+           2    0.1764    0.0300     0.2964    0.2969
+           3    0.0035    0.0102     0.1037    0.1034
+           4    0.0034    0.0152     0.1086    0.1085
+           6    0.0001    0.0230     0.1131    0.1121
+           8    0.0006    0.2518     0.3425    0.3393
+          10    0.0154    5.8398     5.9452    5.9422
+          12    1.2840  124.1047   125.4788  125.5147
+
+k-NN regression (complexity = 1/k: small k = complex)
+  complexity    bias^2  variance  b2+var+s2  measured
+           1    0.0005    0.0943     0.1848    0.1852
+           2    0.0005    0.0501     0.1407    0.1406
+           3    0.0013    0.0351     0.1264    0.1257
+           5    0.0043    0.0264     0.1208    0.1197
+           8    0.0148    0.0218     0.1266    0.1255
+          12    0.0338    0.0200     0.1438    0.1431
+          20    0.0806    0.0225     0.1930    0.1929
+          30    0.2951    0.0251     0.4102    0.4120
+
+Decision tree (complexity = max_depth)
+  complexity    bias^2  variance  b2+var+s2  measured
+           1    0.0616    0.0444     0.1960    0.1969
+           2    0.0224    0.0592     0.1717    0.1727
+           3    0.0036    0.0527     0.1464    0.1470
+           4    0.0010    0.0630     0.1540    0.1546
+           5    0.0006    0.0760     0.1666    0.1667
+           6    0.0005    0.0850     0.1755    0.1753
+           8    0.0005    0.0930     0.1835    0.1839
+          10    0.0005    0.0941     0.1846    0.1849
+
+Bonus - why bagging works (variance reduction, bias barely changes):
+  single deep tree : bias²=0.0005 variance=0.0943
+  bagged 50 trees  : bias²=0.0007 variance=0.0458
+
+Sweet spot for polynomial: degree 3 (measured MSE 0.1034; noise floor 0.0900)
+Plot saved: /home/claude/ml-interview-lab/projects/p03_bias_variance_simulator/outputs/bias_variance_curves.png
+
+--- stderr ---

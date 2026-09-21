@@ -1,0 +1,31 @@
+
+=== SUPERVISED: churn prediction ===
+              precision    recall  f1-score   support
+
+           0      0.774     0.914     0.838       708
+           1      0.628     0.353     0.452       292
+
+    accuracy                          0.750      1000
+   macro avg      0.701     0.633     0.645      1000
+weighted avg      0.731     0.750     0.725      1000
+
+accuracy=0.750  roc_auc=0.747  (baseline accuracy if we always say 'no churn': 0.708)
+standardised coefficients: {'tenure_months': -0.602, 'monthly_charges': 0.477, 'num_support_calls': 0.315, 'is_month_to_month': 0.722}
+
+=== UNSUPERVISED: customer segmentation (K-Means) ===
+silhouette by k: {2: 0.273, 3: 0.271, 4: 0.272, 5: 0.247, 6: 0.257, 7: 0.26, 8: 0.262} -> best k = 2
+         size  tenure  monthly  support_calls  churn_rate
+segment                                                  
+0        1961   37.22    85.49           2.49        0.40
+1        3039   35.49    48.17           0.80        0.22
+
+=== REINFORCEMENT: which email campaign should we send? ===
+(each strategy is run over 30 random seeds - a single run can be lucky!)
+strategy               mean regret     std    worst
+random                       140.0     1.0    142.0
+greedy                       165.9   125.3    299.6
+epsilon_greedy(0.1)           51.2    34.6    152.3
+ucb_textbook(c=1.41)         117.2     4.0    126.5
+ucb_tuned(c=0.2)              44.8    17.4     72.3
+
+--- stderr ---

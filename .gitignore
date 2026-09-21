@@ -1,0 +1,7 @@
+ml_lab.db
+__pycache__/
+*.pyc
+projects/*/outputs/
+projects/*/models/
+logs/
+.venv/

@@ -1,0 +1,35 @@
+train=28000 test=12000  fraud rate train=0.8857% test=1.0417% (test frauds: 125)
+
+[1-2] Metrics at threshold 0.5 (note Dummy: accuracy ~99% but recall 0)
+                         accuracy  precision  recall     f1  roc_auc  pr_auc
+model                                                                       
+Dummy (never fraud)         0.990      0.000   0.000  0.000    0.500   0.010
+LogReg (balanced)           0.970      0.255   0.960  0.403    0.996   0.885
+RandomForest (balanced)     0.995      0.790   0.752  0.770    0.996   0.858
+HistGB (balanced)           0.989      0.479   0.816  0.604    0.977   0.728
+
+[3] Best model by PR-AUC on the VALIDATION slice: LogReg (balanced). Notice ROC-AUC looks great for every
+    model while PR-AUC is noticeably lower - with ~1% positives even a tiny FPR means many false alarms.
+
+[4] Cost-based decision (LogReg (balanced)); FN cost = fraud amount, FP cost = $5 per review
+    threshold chosen on validation = 0.87
+    TEST cost, no model (approve all)     : $   19,737
+    TEST cost, default threshold 0.50     : $    2,351
+    TEST cost, validation-chosen threshold: $    1,181   (recall=0.95, precision=0.52)
+    (oracle threshold picked ON test would give $1,161 - that's cheating, shown only to see how close honest tuning gets)
+
+[5] Calibration: true fraud rate in test = 0.0104
+    LogReg plain     mean predicted prob = 0.0102   Brier = 0.00293
+    LogReg balanced  mean predicted prob = 0.0513   Brier = 0.02183
+    class_weight='balanced' improves recall but its outputs are NOT real probabilities -
+    ROC-AUC is essentially unchanged (0.996 vs 0.996) - ranking quality survives, the probability scale does not.
+    Recalibrate (CalibratedClassifierCV) if you need true probabilities.
+
+[6] Regression metrics: MAE vs RMSE
+    20 errors of 5        : MAE=   5.0   RMSE=   5.0
+    19 errors of 5 + one 200: MAE=  14.8   RMSE=  45.0
+    constant prediction = mean   (  56.14):  MAE=  39.34   RMSE=  63.97
+    constant prediction = median (  37.05):  MAE=  35.54   RMSE=  66.69
+    -> RMSE is minimised by the MEAN, MAE by the MEDIAN; RMSE punishes big misses, MAE is robust.
+
+--- stderr ---

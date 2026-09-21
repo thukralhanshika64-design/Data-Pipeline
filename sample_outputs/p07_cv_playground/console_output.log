@@ -1,0 +1,35 @@
+
+==== A. Hold-out estimate is noisy (small dataset) ===========================
+  single 80/20 hold-out over 100 seeds: mean=0.703  min=0.630  max=0.780  (range = 0.150)
+  5-fold CV  : mean=0.702 +- 0.013      10-fold CV: mean=0.708 +- 0.022
+  -> With a single split you could report anywhere in that range depending on the random seed.
+
+==== B. Stratified vs plain K-Fold on 1% positives ===========================
+  KFold(5, shuffle)    positives per validation fold: [2, 4, 1, 0, 3]
+  StratifiedKFold(5)   positives per validation fold: [2, 2, 2, 2, 2]
+  -> Plain KFold can leave a fold with 0 positives (recall/AUC undefined). Always stratify classification.
+
+==== C. Time-series: shuffled KFold leaks the future =========================
+  shuffled KFold  R2 = 0.972   <- looks fantastic
+  TimeSeriesSplit R2 = 0.297   <- honest: the model must predict a FUTURE it hasn't seen
+  Why: shuffled folds let the model interpolate between past AND future neighbours; a tree model
+  also cannot extrapolate the upward trend beyond the training range.
+
+==== D. Grouped data: the same customer appears in train AND validation ======
+  KFold accuracy      = 0.963   <- model just memorised customers
+  GroupKFold accuracy = 0.516   <- ~0.5 = coin-flip, the truth (labels were random!)
+  Use GroupKFold whenever rows are not independent (patients, users, devices, sessions, documents).
+
+==== E. Pipeline leakage: feature selection on ALL data before CV ============
+  selection BEFORE cv : AUC = 0.881   <- 'discovered' signal in pure noise!
+  selection INSIDE cv : AUC = 0.540   <- ~0.5, as it must be
+  Rule: every step that learns from data (scaling, imputing, encoding, selection, PCA, SMOTE)
+        belongs INSIDE the pipeline that is cross-validated.
+
+==== F. Nested CV: honest performance of 'tune hyper-parameters + evaluate' ==
+  grid-search best score (non-nested): AUC = 0.674   <- optimistic (max over 78 candidates)
+  nested CV estimate                 : AUC = 0.582 +- 0.086   <- honest
+  The selection bias is bigger with small data and large grids. Nested CV = inner loop tunes,
+  outer loop measures. Then train the final model on ALL data with the chosen hyper-parameters.
+
+--- stderr ---

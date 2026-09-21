@@ -1,0 +1,31 @@
+5-fold CV ROC-AUC (mean +- std) and change vs the L0 baseline
+  ^ / v = change larger than the fold-to-fold noise, ~ = within noise (don't trust it)
+
+feature set                                                 LogReg                    HistGB
+L0 baseline (raw + one-hot)                 0.7755 +-0.013 (+0.000  )    0.7323 +-0.009 (+0.000  )
+L1 + transforms/ratios/flags/ordinal        0.7750 +-0.013 (-0.000 ~)    0.7399 +-0.012 (+0.008 ~)
+L2 + date features                          0.7813 +-0.013 (+0.006 ~)    0.7448 +-0.008 (+0.013 ^)
+L3 + city target-encoded                    0.7915 +-0.012 (+0.016 ^)    0.7557 +-0.007 (+0.023 ^)
+L3b city one-hot (alt)                      0.7919 +-0.011 (+0.016 ^)    0.7580 +-0.011 (+0.026 ^)
+
+How to read this table: keep a feature idea only if it earns a '^'. Ideas that show '~' cost
+complexity for no measurable gain. Also compare the two models: the same feature can help one model
+family and not the other, so always ablate per model. Target encoding is designed for HIGH cardinality; with 30 cities
+one-hot is just as good. Experiment: get_dataset('customers', refresh=True, n_cities=500) and re-run
+(in the author's test target-encoding edged one-hot by ~0.005 AUC - small, within noise; the benefit
+is expected to grow as categories get rarer, and one-hot's column count explodes).
+
+
+Top-8 features by mutual information (exploration only - do NOT select features on all data before CV!):
+tenure_months      0.0405
+m2m_x_support      0.0371
+contract_type      0.0360
+monthly_charges    0.0244
+log_monthly        0.0225
+avg_spend          0.0218
+total_charges      0.0191
+city               0.0133
+
+Saved engineered matrix (5000, 25) to DB table 'customer_features' (a mini feature store).
+
+--- stderr ---

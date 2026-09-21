@@ -1,0 +1,40 @@
+name: ML Pipeline CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Seed SQLite Database
+      run: |
+        python -m common.db
+
+    - name: Run Core ML Projects (Smoke Test)
+      run: |
+        python projects/p01_learning_paradigms_lab/main.py
+        python projects/p02_overfit_detective/main.py
+        python projects/p03_bias_variance_simulator/main.py
+        python projects/p06_fraud_metrics_lab/main.py
+        python projects/p10_production_model_picker/main.py

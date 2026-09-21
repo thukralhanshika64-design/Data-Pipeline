@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  ml-lab-studio:
+    build: .
+    container_name: ml_interview_lab_3d
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+    volumes:
+      - ./ml_lab.db:/app/ml_lab.db
+    restart: unless-stopped
